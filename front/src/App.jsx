@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import './App.css'
 import './index.css'
-import Login from './components/login.jsx'
-const apiUrl = import.meta.env.VITE_API_URL;
+import  Auth  from './components/auth.jsx'
+import  AuthProvider  from './context/authContext.jsx'
 function App() {
   return (
     <>
-      <Login />
+    <AuthProvider>
+      <Auth />
+    </AuthProvider>
     </>
   )
 }

@@ -7,7 +7,7 @@ const PORT = 8000;
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', authRoute);
+app.use('/api/auth', authRoute);
 
 
 app.listen(PORT, () => {

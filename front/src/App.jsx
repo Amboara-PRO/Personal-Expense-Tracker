@@ -5,14 +5,33 @@ import  AuthProvider  from './context/authContext.jsx'
 import { useContext } from 'react'
 import { AuthContext as authContext } from './context/authContext.jsx'
 import Dashboard from './pages/dashboard.jsx'
+import { Route, Routes , Navigate} from 'react-router-dom'
+import Profile from './pages/profile.jsx'
+import ProfileProvider from './context/profileContext.jsx'
 
 function AppContent() {
   const { user } = useContext(authContext); 
 
   return (
-    <>
-      {user ? <Dashboard /> : <Auth />} 
-    </>
+    <Routes>
+      {user ? (
+        <>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+           <Route 
+            path="/profile" 
+            element={
+              <ProfileProvider>
+                <Profile />
+              </ProfileProvider>
+            } 
+          />
+        </>
+      ) : (
+        <Route path="/" element={<Auth />} />
+      )}
+      <Route path="*" element={<Auth/>} />
+    </Routes>
   );
 }
 function App() {

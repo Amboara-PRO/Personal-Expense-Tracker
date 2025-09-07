@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoute from './route/auth.route.js';
+import profileRoute from './route/profile.route.js';
 const app = express();
 const PORT = 8000;
 
@@ -8,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoute);
+app.use('/api/profile', profileRoute);
 
 import dotenv from "dotenv";
 dotenv.config();

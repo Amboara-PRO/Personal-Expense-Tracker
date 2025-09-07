@@ -48,6 +48,13 @@ export default function AuthProvider({ children }) {
       return { err: "Invalid email address" };
     }
 
+    if(password.length > 100){
+    return { err: "Password too long" };
+  }
+  if(email.length > 100){
+    return { err: "Email too long" };
+  }
+
     const data = await signup(email, password);
 
     if (data.error || data.err) {

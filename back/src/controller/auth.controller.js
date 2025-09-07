@@ -33,6 +33,13 @@ export const createUser = async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
+  if(password.length > 100){
+    return res.status(400).json({ error: "Password too long" });
+  }
+  if(email.length > 100){
+    return res.status(400).json({ error: "Email too long" });
+  }
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: "Invalid email format" });
   }

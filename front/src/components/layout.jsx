@@ -20,7 +20,6 @@ export default function Layout({ children }) {
           <nav className="flex flex-col gap-4">
             <Link to="/dashboard" className="hover:bg-indigo-700 p-2 rounded">Dashboard</Link>
             <Link to="/expenses" className="hover:bg-indigo-700 p-2 rounded">Expenses</Link>
-            <Link to="/add-expense" className="hover:bg-indigo-700 p-2 rounded">Add Expense</Link>
             <Link to="/profile" className="hover:bg-indigo-700 p-2 rounded">Profile</Link>
           </nav>
         </div>

@@ -22,11 +22,24 @@ model User {
   expenses      Expense[]
 }
 
+enum ExpenseType {
+  ONE_TIME
+  RECURRING
+}
 model Expense {
   id          Int       @id @default(autoincrement())
-  title       String
+  description String
+  category    String
   amount      Float
   createdAt   DateTime  @default(now())
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        ExpenseType
+  date        DateTime?
+
+  startDate   DateTime?
+  endDate     DateTime?
+
+  receiptUrl  String?
+
   userId      Int
+  user        User      @relation(fields: [userId], references: [id])
 }

@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { createExpense, getUserExpenses, updateExpense, deleteExpense } from "../controller/expense.controller.js";
+import {
+  createExpense,
+  getUserExpenses,
+  updateExpense,
+  deleteExpense,
+} from "../controller/expense.controller.js";
 
 const router = Router();
 

@@ -20,6 +20,7 @@ model User {
   password    String  
   creationDate       DateTime      @default(now())
   expenses      Expense[]
+  dashboardStats DashboardStats?
 }
 
 enum ExpenseType {
@@ -43,3 +44,14 @@ model Expense {
   userId      Int
   user        User      @relation(fields: [userId], references: [id])
 }
+
+model DashboardStats {
+  id                   Int       @id @default(autoincrement())
+  totalAmount          Float     @default(0)
+  recurringExpensesCount Int     @default(0)
+  oneTimeExpensesCount Int       @default(0)
+  mostUsedCategory     String?
+  userId               Int        @unique
+  user                 User      @relation(fields: [userId], references: [id])
+}
+

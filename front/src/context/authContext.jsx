@@ -1,84 +1,91 @@
 import { createContext, useState, useEffect } from "react";
 import { login, signup, getMe } from "../api/auth";
 
+
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     const fetchUser = async () => {
-      try{
+      try {
         const data = await getMe();
         if (data && !data.message) {
           setUser(data);
+        } else {
+          setUser(null);
+          localStorage.removeItem("token");
         }
-      }catch(error){
+      } catch (error) {
+        console.error("Error fetching user:", error);
         setUser(null);
         localStorage.removeItem("token");
-        return {err: "Something went wrong"}
       }
     };
     fetchUser();
   }, []);
 
   const handleLogin = async (email, password) => {
-  try {
-    const data = await login(email, password);
+    try {
+      if (!email || !password) {
+        return { err: "Email and password are required" };
+      }
 
-    if (!data.token) {
-      return { err: "Invalid credentials" };
+      const data = await login(email, password);
+
+      if (!data || !data.token) {
+        return { err: "Invalid credentials" };
+      }
+
+      localStorage.setItem("token", data.token); // Stocker le token
+      const me = await getMe();
+      setUser(me);
+
+      return { success: "Login successful", data: me };
+    } catch (error) {
+      console.error("Error during login:", error);
+      return { err: "Something went wrong" };
     }
-
-    const me = await getMe();
-    setUser(me);
-
-    return { success: "Login successful", data: me };
-  } catch (error) {
-    return { err: "Something went wrong" };
-  }
-};
-
+  };
 
   const handleSignup = async (email, password) => {
-  try {
-    if (email.length < 1 || password.length < 1) {
-      return { err: "Email and password are required" };
+    try {
+      if (!email || !password) {
+        return { err: "Email and password are required" };
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return { err: "Invalid email address" };
+      }
+
+      if (password.length > 100 || email.length > 100) {
+        return { err: "Email or password too long" };
+      }
+
+      const data = await signup(email, password);
+
+      if (!data || data.error || data.err) {
+        return { err: data.error || data.err || "Signup failed" };
+      }
+
+      return { success: "Signup successful", data };
+    } catch (error) {
+      console.error("Error during signup:", error);
+      return { err: "Something went wrong" };
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return { err: "Invalid email address" };
-    }
-
-    if(password.length > 100){
-    return { err: "Password too long" };
-  }
-  if(email.length > 100){
-    return { err: "Email too long" };
-  }
-
-    const data = await signup(email, password);
-
-    if (data.error || data.err) {
-      return { err: data.error || data.err };
-    }
-
-    return { success: "Signup successful", data };
-  } catch (error) {
-    return { err: "Something went wrong" };
-  }
-};
-
-
+  };
 
   const handleLogout = () => {
-  try {
-    localStorage.removeItem("token");
-    setUser(null);
-    return { success: "Logout successful" };
-  } catch (error) {
-    return { err: "Something went wrong" };
-  }
-};
-
+    try {
+      localStorage.removeItem("token");
+      setUser(null);
+      return { success: "Logout successful" };
+    } catch (error) {
+      console.error("Error during logout:", error);
+      return { err: "Something went wrong" };
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -87,4 +94,4 @@ export default function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-};
+}

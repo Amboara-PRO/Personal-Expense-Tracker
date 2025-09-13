@@ -13,6 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ExpenseType {
+  ONE_TIME
+  RECURRING
+}
 model User {
   id       Int      @id @default(autoincrement())
   name      String?      @unique
@@ -20,38 +24,29 @@ model User {
   password    String  
   creationDate       DateTime      @default(now())
   expenses      Expense[]
-  dashboardStats DashboardStats?
 }
 
-enum ExpenseType {
-  ONE_TIME
-  RECURRING
-}
 model Expense {
   id          Int       @id @default(autoincrement())
+  amount      Float
   description String
   category    String
-  amount      Float
-  createdAt   DateTime  @default(now())
   type        ExpenseType
   date        DateTime?
-
   startDate   DateTime?
   endDate     DateTime?
-
-  receiptUrl  String?
-
+  createdAt   DateTime  @default(now())
   userId      Int
+
+  receipt     Receipt?
   user        User      @relation(fields: [userId], references: [id])
+
 }
 
-model DashboardStats {
-  id                   Int       @id @default(autoincrement())
-  totalAmount          Float     @default(0)
-  recurringExpensesCount Int     @default(0)
-  oneTimeExpensesCount Int       @default(0)
-  mostUsedCategory     String?
-  userId               Int        @unique
-  user                 User      @relation(fields: [userId], references: [id])
+model Receipt {
+  id        Int      @id @default(autoincrement())
+  filePath  String
+  createdAt DateTime @default(now())
+  expenseId Int      @unique
+  expense   Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
 }
-

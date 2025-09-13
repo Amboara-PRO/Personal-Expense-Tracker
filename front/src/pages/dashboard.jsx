@@ -62,7 +62,7 @@ const Dashboard = () => {
     return (
         <Layout>
             <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Tableau de Bord</h1>
+                <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
                 
                 {alert && alert.alert && (
                     <BudgetAlert message={alert.message} />
@@ -90,12 +90,12 @@ const Dashboard = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-white p-6 rounded-lg shadow-md">
-                        <h2 className="text-xl font-semibold mb-4">Dépenses par Catégorie</h2>
+                        <h2 className="text-xl font-semibold mb-4">Expenses by category</h2>
                         {summary && <ExpensePieChart data={summary.expensesByCategory} />}
                     </div>
                     
                     <div className="bg-white p-6 rounded-lg shadow-md">
-                        <h2 className="text-xl font-semibold mb-4">Historique Mensuel</h2>
+                        <h2 className="text-xl font-semibold mb-4">Story monthly</h2>
                         <MonthlyBarChart />
                     </div>
                 </div>

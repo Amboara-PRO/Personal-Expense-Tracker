@@ -1,26 +1,38 @@
-import express from 'express';
-import cors from 'cors';
-import authRoute from './route/auth.route.js';
-import profileRoute from './route/profile.route.js';
-import expenseRoute from './route/expense.route.js';    
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+
+import authRoute from "./route/auth.route.js";
+import profileRoute from "./route/profile.route.js";
+import expenseRoute from "./route/expense.route.js";
+
+dotenv.config();
+
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/auth', authRoute);
-app.use('/api/profile', profileRoute);
-app.use('/api/expenses', expenseRoute);
-app.use('/api/dashboard', (await import('./route/dashboard.route.js')).default);
+app.use("/receipts", express.static(path.join(process.cwd(), "receipts")));
 
-import dotenv from "dotenv";
-dotenv.config();
-const dbUrl = process.env.DATABASE_URL;
-const jwtSecret = process.env.JWT_SECRET;
+app.use("/api/auth", authRoute);
+app.use("/api/profile", profileRoute);
+app.use("/api/expenses", expenseRoute);
 
-console.log("Database URL:", dbUrl);
-console.log("JWT Secret:", jwtSecret);
+app.get("/", (req, res) => {
+  res.send("Expense Tracker API is running!");
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: err.message });
+});
+
+console.log("Database URL:", process.env.DATABASE_URL);
+console.log("JWT Secret:", process.env.JWT_SECRET);
+
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });

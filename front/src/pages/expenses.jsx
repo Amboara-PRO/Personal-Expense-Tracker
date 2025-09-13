@@ -4,6 +4,7 @@ import {
   createExpense,
   updateExpense,
   deleteExpense,
+  uploadReceipt,
 } from "../api/expense";
 import { AuthContext } from "../context/authContext";
 import Layout from "../components/layout.jsx";
@@ -21,6 +22,7 @@ export default function Expenses() {
     type: "ONE_TIME",
     startDate: "",
     endDate: "",
+    receipt: null,
   });
 
   useEffect(() => {
@@ -37,6 +39,10 @@ export default function Expenses() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setForm({ ...form, receipt: e.target.files[0] });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -48,17 +54,20 @@ export default function Expenses() {
           expenses.map((e) => (e.id === editing.id ? expenseData : e))
         );
         setMessage("Expense updated !");
-        setTimeout(() => {
-          setMessage("");
-        }, 3000);
       } else {
         expenseData = await createExpense(form, user.id);
+
+        if (form.receipt) {
+          await uploadReceipt(expenseData.id, form.receipt);
+        }
+
         setExpenses([expenseData, ...expenses]);
         setMessage("Expense added !");
-        setTimeout(() => {
-          setMessage("");
-        }, 3000);
       }
+
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
 
       setForm({
         amount: "",
@@ -68,6 +77,7 @@ export default function Expenses() {
         type: "ONE_TIME",
         startDate: "",
         endDate: "",
+        receipt: null,
       });
       setEditing(null);
     } catch (err) {
@@ -85,6 +95,7 @@ export default function Expenses() {
       type: exp.type || "ONE_TIME",
       startDate: exp.startDate ? exp.startDate.slice(0, 10) : "",
       endDate: exp.endDate ? exp.endDate.slice(0, 10) : "",
+      receipt: null,
     });
   };
 
@@ -99,7 +110,7 @@ export default function Expenses() {
 
   return (
     <Layout>
-      <div className="max-w-[51rem] mx-auto mt-10 p-6 bg-white rounded shadow">
+      <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded shadow">
         <h2 className="text-xl font-bold mb-4">My expenses</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
           <input
@@ -186,6 +197,23 @@ export default function Expenses() {
             </>
           )}
 
+          <div className="flex flex-col gap-2">
+            <label className="block font-medium text-gray-700">
+              Upload Receipt
+            </label>
+
+            <label className="cursor-pointer bg-white border border-gray-300 rounded-lg py-2 px-4 w-full text-center text-gray-700 hover:bg-indigo-50 hover:border-indigo-400 transition-all duration-200 shadow-sm">
+              {form.receipt ? form.receipt.name : "Choose a file"}
+              <input
+                type="file"
+                name="receipt"
+                onChange={handleFileChange}
+                accept=".jpg,.jpeg,.png,.pdf"
+                className="hidden"
+              />
+            </label>
+          </div>
+
           <button
             type="submit"
             className="bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
@@ -206,6 +234,7 @@ export default function Expenses() {
                   type: "ONE_TIME",
                   startDate: "",
                   endDate: "",
+                  receipt: null,
                 });
               }}
               className="bg-gray-400 text-white py-2 rounded hover:bg-gray-500"
@@ -228,6 +257,7 @@ export default function Expenses() {
                 <th className="px-4 py-2 border">Category</th>
                 <th className="px-4 py-2 border">Type</th>
                 <th className="px-4 py-2 border">Date</th>
+                <th className="px-4 py-2 border">Receipt</th>
                 <th className="px-4 py-2 border">Actions</th>
               </tr>
             </thead>
@@ -245,6 +275,31 @@ export default function Expenses() {
                           exp.endDate ? exp.endDate.slice(0, 10) : "ongoing"
                         }`}
                   </td>
+
+                  <td className="px-4 py-2 border text-center">
+                    {exp.receipt ? (
+                      <>
+                        <a
+                          href={`http://localhost:8000/receipts/${exp.receipt.filePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline mr-2"
+                        >
+                          View
+                        </a>
+                        <a
+                          href={`http://localhost:8000/receipts/${exp.receipt.filePath}`}
+                          download
+                          className="text-green-600 underline"
+                        >
+                          Download
+                        </a>
+                      </>
+                    ) : (
+                      <span className="text-gray-400">No receipt</span>
+                    )}
+                  </td>
+
                   <td className="px-4 py-2 border">
                     <div className="flex gap-2">
                       <button

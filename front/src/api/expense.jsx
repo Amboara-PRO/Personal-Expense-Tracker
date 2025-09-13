@@ -5,9 +5,9 @@ export const createExpense = async (expense, userId) => {
 
   const payload = {
     description: expense.description || "",
-    category: expense.category || "",
     amount: parseFloat(expense.amount),
     type: expense.type,
+    category: expense.category || "",
     userId,
   };
 
@@ -60,5 +60,22 @@ export const deleteExpense = async (id) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error("Failed to delete");
+  return res.json();
+};
+
+export const uploadReceipt = async (expenseId, file) => {
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("receipt", file);
+
+  const res = await fetch(`${API_URL}/${expenseId}/receipt`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error("Failed to upload receipt");
   return res.json();
 };

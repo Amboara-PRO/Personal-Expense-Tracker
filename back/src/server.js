@@ -12,6 +12,7 @@ app.use(express.json());
 app.use('/api/auth', authRoute);
 app.use('/api/profile', profileRoute);
 app.use('/api/expenses', expenseRoute);
+app.use('/api/dashboard', (await import('./route/dashboard.route.js')).default);
 
 import dotenv from "dotenv";
 dotenv.config();
